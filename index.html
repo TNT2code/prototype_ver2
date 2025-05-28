@@ -1,0 +1,177 @@
+
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TNT シュミレーター</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="board">
+    <!-- 敵側スロット -->
+    <div class="side-zone-top-left">
+      <div class="deck-slot" data-zone="deck-opponent">デッキ</div>
+      <div class="slot" data-zone="graveyard-opponent">
+        <span class="slot-label"></span>
+      </div>
+      <div class="slot" data-zone="memorial-opponent">
+        <span class="slot-label"></span>
+      </div>
+    </div>
+
+    <!-- 自分側スロット -->
+    <div class="side-zone-bottom-right">
+      <div class="deck-slot" data-zone="deck-player">デッキ</div>
+      <div class="slot" data-zone="graveyard-player">
+        <span class="slot-label"></span>
+      </div>
+      <div class="slot" data-zone="memorial-player">
+        <span class="slot-label"></span>
+      </div>
+    </div>
+
+    <!-- 敵 リソースゾーン -->
+    <div class="resource-zone-top-right">
+      <div class="resource-slot" data-zone="resource1-opponent">
+        <span class="slot-label"></span>
+      </div>
+      <div class="resource-slot" data-zone="resource2-opponent">
+        <span class="slot-label"></span>
+      </div>
+      <div class="slot" data-zone="strategy-opponent">
+        <span class="slot-label"></span>
+      </div>
+    </div>
+
+    <!-- 自分 リソースゾーン -->
+    <div class="resource-zone-bottom-left">
+      <div class="resource-slot" data-zone="resource1-player">
+        <span class="slot-label"></span>
+      </div>
+      <div class="resource-slot" data-zone="resource2-player">
+        <span class="slot-label"></span>
+      </div>
+      <div class="slot" data-zone="strategy-player">
+        <span class="slot-label"></span>
+      </div>
+    </div>
+
+    <!-- 敵 戦地 -->
+    <div class="zone">
+      <div class="grid enemy-battlefield">
+        <div class="cell" id="enemy-0">敵</div>
+        <div class="cell" id="enemy-1">敵</div>
+        <div class="cell" id="enemy-2">敵</div>
+        <div class="cell" id="enemy-3">敵</div>
+        <div class="cell" id="enemy-4">敵</div>
+        <div class="cell" id="enemy-5">敵</div>
+      </div>
+    </div>
+
+    <!-- 中央 戦地 -->
+    <div class="zone">
+      <div class="grid center-battlefield">
+        <div class="cell" id="center-0">中央</div>
+        <div class="cell" id="center-1">中央</div>
+        <div class="cell" id="center-2">中央</div>
+        <div class="cell" id="center-3">中央</div>
+        <div class="cell" id="center-4">中央</div>
+      </div>
+    </div>
+
+    <!-- プレイヤー 戦地 -->
+    <div class="zone">
+      <div class="grid player-battlefield">
+        <div class="cell" id="player-0">自分</div>
+        <div class="cell" id="player-1">自分</div>
+        <div class="cell" id="player-2">自分</div>
+        <div class="cell" id="player-3">自分</div>
+        <div class="cell" id="player-4">自分</div>
+        <div class="cell" id="player-5">自分</div>
+      </div>
+    </div>
+
+
+    <!-- リソースパネル -->
+    <div class="resource-panel">
+      <div class="counter">
+        <span>資金</span>
+        <button class="minus" data-target="fund">−</button>
+        <span class="value" id="fund">0</span>
+        <button class="plus" data-target="fund">＋</button>
+      </div>
+      <div class="counter">
+        <span>民意</span>
+        <button class="minus" data-target="publicwill">−</button>
+        <span class="value" id="publicwill">0</span>
+        <button class="plus" data-target="publicwill">＋</button>
+      </div>
+      <div class="counter">
+        <span>士気</span>
+        <button class="minus" data-target="morale">−</button>
+        <span class="value" id="morale">0</span>
+        <button class="plus" data-target="morale">＋</button>
+      </div>
+      <div class="counter">
+        <span>友好</span>
+        <button class="minus" data-target="friendship">−</button>
+        <span class="value" id="friendship">0</span>
+        <button class="plus" data-target="friendship">＋</button>
+      </div>
+      <div class="counter">
+        <span>戦力</span>
+        <button class="minus" data-target="strength">−</button>
+        <span class="value" id="strength">6</span>
+        <button class="plus" data-target="strength">＋</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 敵リソースパネル -->
+  <div class="resource-panel" id="opponent-resource-panel" style="top: 10px; left: 10px;">
+  <div class="counter"><span>資金</span><span class="value" id="opponent-fund">0</span></div>
+  <div class="counter"><span>民意</span><span class="value" id="opponent-publicwill">0</span></div>
+  <div class="counter"><span>士気</span><span class="value" id="opponent-morale">0</span></div>
+  <div class="counter"><span>友好</span><span class="value" id="opponent-friendship">0</span></div>
+  <div class="counter"><span>戦力</span><span class="value" id="opponent-strenght">0</span></div>
+</div>
+
+    <!-- 敵の手札 -->
+<div id="opponent-hand" class="opponent-hand-panel">
+  手札：<span id="opponent-hand-count">0</span>枚
+</div>
+
+
+  <!-- モーダル表示 -->
+  <div class="modal-overlay" id="modal-overlay">
+    <div class="modal">
+      <h2 id="modal-title"></h2>
+      <ul id="modal-list"></ul>
+      <button class="modal-close" id="modal-close">閉じる</button>
+    </div>
+  </div>
+
+  <!-- デッキ読み込みUI -->
+  <div id="deck-importer" style="position: absolute; top: 10px; right: 10px; z-index: 10;">
+    <input type="file" id="import-deck-file" accept=".json" />
+  </div>
+
+  <!-- メニュー表示ボタン -->
+<div id="menu-container">
+  <button id="menu-button">☰</button>
+  <ul id="menu-list" class="hidden"></ul>
+</div>
+
+
+  <!-- ドロー専用ボタン -->
+  <button id="draw-button">ドロー</button>
+
+  <script src="https://cdn.jsdelivr.net/npm/interactjs/dist/interact.min.js"></script>
+  <script type="module" src="script/main.js"></script>
+  <script src="script/tnt_scale_control.js"></script>
+  <!-- Socket.IO クライアントスクリプトの読み込み -->
+<script src="/socket.io/socket.io.js"></script>
+
+</body>
+</html>

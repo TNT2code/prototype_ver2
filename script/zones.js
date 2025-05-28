@@ -1,0 +1,15 @@
+export const zones = {
+  "graveyard-player": [],
+  "memorial-player": [],
+  "strategy-player": [],
+  "resource1-player": [],
+  "resource2-player": [],
+  "graveyard-opponent": [],
+  "memorial-opponent": [],
+  "strategy-opponent": [],
+  "resource1-opponent": [],
+  "resource2-opponent": [],
+    "battle-player": [],
+  "battle-opponent": [],
+  "battle-center": [],
+};
