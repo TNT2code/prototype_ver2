@@ -39,6 +39,12 @@ io.on("connection", (socket) => {
     console.log(`🔵 ${socket.id} が ${roomId} に ${role} として参加`);
   });
 
+
+  socket.on("move-card", ({ roomId, card, toZone }) => {
+  socket.to(roomId).emit("move-card", { card, toZone });
+});
+
+
   socket.on("disconnect", () => {
     for (const roomId in rooms) {
       rooms[roomId] = rooms[roomId].filter(id => id !== socket.id);
@@ -46,6 +52,7 @@ io.on("connection", (socket) => {
     }
     console.log("🔴 ユーザー切断:", socket.id);
   });
+  
 });
 
 // 🆕 デッキをシャッフルして生成する関数
@@ -66,3 +73,4 @@ function generateShuffledDeck() {
 server.listen(3000, () => {
   console.log("✅ Socket.IO サーバー起動中（ポート3000）");
 });
+

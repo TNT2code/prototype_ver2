@@ -24,39 +24,61 @@ socket.on("assign-role", (role) => {
   isHost = role === "host";
 });
 
+
+// 🔁 ゾーン名 → セルID の変換
 function zoneToCellId(zone) {
-  if (zone === "battle-player") return "player-0-0"; // 仮。実際のマスに合わせて変える
-  if (zone === "battle-opponent") return "enemy-0-0";
-  if (zone === "battle-center") return "center-0-0";
-  return null;
+  switch (zone) {
+    case "battle-player": return "player-cell";
+    case "battle-opponent": return "enemy-cell";
+    case "battle-center": return "center-cell";
+    default: return "";
+  }
 }
 
 
 // 🧩 カード移動イベント受信（相手の操作）
 // socket-actions.js
 socket.on("move-card", ({ card, toZone }) => {
-  if (!zones[toZone]) return;
-  zones[toZone].push(card);
+  console.log("📥 move-card受信:", card, toZone);
 
-  const cell = document.querySelector(`#${zoneToCellId(toZone)}`);
-  if (cell) {
-    const elem = createCardElement(card, "placed-card", "battle");
-    
-    // パワー・フォース表示
-    const powerLabel = document.createElement("div");
-    powerLabel.className = "power-label";
-    powerLabel.textContent = `⚡${card.パワー ?? "?"}`;
-    elem.appendChild(powerLabel);
+  if (!zones[toZone]) {
+    console.warn("❌ 無効なゾーン:", toZone);
+    return;
+  }
 
-    const forceLabel = document.createElement("div");
-    forceLabel.className = "force-label";
-    forceLabel.textContent = `✨${card.フォース ?? "?"}`;
-    elem.appendChild(forceLabel);
+  zones[toZone].push(card); // 受信側のzone情報に追加
 
+  const target = document.querySelector(`[data-zone="${toZone}"]`);
+
+  if (target) {
+    // 通常スロットや手札ゾーンに表示
+    const elem = createCardElement(card);
     attachDetailListeners(elem, card);
-    cell.appendChild(elem);
+    target.appendChild(elem);
+  } else {
+    // たとえば戦地（battle系）は cell ID にマッピングされる
+    const cell = document.querySelector(`#${zoneToCellId(toZone)}`);
+    if (cell) {
+      const elem = createCardElement(card, "placed-card", "battle");
+
+      const powerLabel = document.createElement("div");
+      powerLabel.className = "power-label";
+      powerLabel.textContent = `⚡${card.パワー ?? "?"}`;
+      elem.appendChild(powerLabel);
+
+      const forceLabel = document.createElement("div");
+      forceLabel.className = "force-label";
+      forceLabel.textContent = `✨${card.フォース ?? "?"}`;
+      elem.appendChild(forceLabel);
+
+      attachDetailListeners(elem, card);
+      cell.appendChild(elem);
+    } else {
+      console.warn(`❌ 対象DOMが見つかりません: ${toZone}`);
+    }
   }
 });
+
 
 
   // カード削除の同期

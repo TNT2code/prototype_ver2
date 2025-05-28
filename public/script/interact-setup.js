@@ -12,6 +12,8 @@ import { attachDetailListeners } from './modal.js';
 import { deck, mainDeck, mercDeck } from './deck.js';
 import { createCardElement, updateSlotLabels } from './utils.js';
 import { isHost, socket } from './socket-io.js';
+import { roomId } from './socket-io.js';
+
 
 function findCardByInstanceID(id) {
   return (
@@ -191,38 +193,43 @@ if (card) {
   }
 
   renderHand();
- if (isHost) {
-        socket.emit("move-card", {
-          card,
-          toZone: guessedZone
-        });
-      }
+  
+if (isHost) {
+  console.log("📤 move-card送信", card, guessedZone);
+  socket.emit("move-card", {
+      roomId,
+    card,
+    toZone: guessedZone
+  });
+}
+
   
 }
 
 
   });
 
-  interact('.slot, .resource-slot').dropzone({
-    ondragenter(e) { e.currentTarget.classList.add('drop-hover'); },
-    ondragleave(e) { e.currentTarget.classList.remove('drop-hover'); },
-    ondrop(event) {
-      const zone = event.currentTarget.dataset.zone;
-      if (!zone || !zones[zone]) return;
+interact('.slot, .resource-slot').dropzone({
+  ondragenter(e) { e.currentTarget.classList.add('drop-hover'); },
+  ondragleave(e) { e.currentTarget.classList.remove('drop-hover'); },
+  ondrop(event) {
+    const zone = event.currentTarget.dataset.zone;
+    if (!zone || !zones[zone]) return;
 
-      handleDrop(event.currentTarget, (card, instanceID) => {
-        zones[zone].push(card);
-        renderHand();
-        updateSlotLabels(); // ←追加
+    handleDrop(event.currentTarget, (card, instanceID) => {
+      zones[zone].push(card);
+      renderHand();
+      updateSlotLabels();
 
-              // ✅ 相手に送信
       socket.emit("move-card", {
+        roomId,
         card,
         toZone: zone
       });
-      });
-    }
-  });
+    });
+  } // ← ✅ ここが必要
+});
+
 
   interact('#hand').dropzone({
     ondragenter(e) { e.currentTarget.classList.add('drop-hover'); },
@@ -235,10 +242,15 @@ if (card) {
         updateSlotLabels(); // ←追加
 
               // ✅ 相手に送信
-      socket.emit("move-card", {
-        card,
-        toZone: zone
-      });
+              console.log("📡 move-card を送信:", card, "→", guessedZone);
+console.log("👤 isHost:", isHost); 
+ if (isHost) {
+        socket.emit("move-card", {
+            roomId,
+          card,
+          toZone: "hand"
+        });
+      }
       });
     }
   });
@@ -258,8 +270,9 @@ if (card) {
 
               // ✅ 相手に送信
       socket.emit("move-card", {
+          roomId,
         card,
-        toZone: zone
+        toZone: "deck"
       });
       });
     }
