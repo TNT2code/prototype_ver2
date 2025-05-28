@@ -40,9 +40,16 @@ io.on("connection", (socket) => {
   });
 
 
-  socket.on("move-card", ({ roomId, card, toZone }) => {
-  socket.to(roomId).emit("move-card", { card, toZone });
+socket.on("move-card", ({ roomId, card, toZone, cellId }) => {
+  console.log("📤 move-cardサーバー送信:");
+  console.log("roomId:", roomId);
+  console.log("toZone:", toZone);
+  console.log("cellId:", cellId);
+  console.log("card:", card);
+
+  socket.to(roomId).emit("move-card", { card, toZone, cellId });
 });
+
 
 
   socket.on("disconnect", () => {
