@@ -10,7 +10,6 @@ import { renderHand } from "./hand.js";
 import { initOpponentDeck, drawOpponentCards } from './opponent.js';
 import { socket } from './socket-io.js'; // ✅ 追加
 
-const socket = io(); // Socket.IOサーバーに接続
 
 // カードリストを読み込んで初期化処理を開始
 fetch("card_list.json")

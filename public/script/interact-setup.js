@@ -11,7 +11,6 @@ import { zones } from './zones.js';
 import { attachDetailListeners } from './modal.js';
 import { deck, mainDeck, mercDeck } from './deck.js';
 import { createCardElement, updateSlotLabels } from './utils.js';
-import { socket } from './socket-io.js'; // ✅ 追加
 import { isHost, socket } from './socket-io.js';
 
 function findCardByInstanceID(id) {
@@ -218,7 +217,7 @@ if (card) {
 
               // ✅ 相手に送信
       socket.emit("move-card", {
-        card: selectedCard,
+        card,
         toZone: zone
       });
       });
@@ -237,7 +236,7 @@ if (card) {
 
               // ✅ 相手に送信
       socket.emit("move-card", {
-        card: selectedCard,
+        card,
         toZone: zone
       });
       });
@@ -259,7 +258,7 @@ if (card) {
 
               // ✅ 相手に送信
       socket.emit("move-card", {
-        card: selectedCard,
+        card,
         toZone: zone
       });
       });

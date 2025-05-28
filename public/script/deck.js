@@ -48,11 +48,12 @@ export function drawCards(count = 1) {
     }
     const drawn = mainDeck.shift();
     hand.push(drawn);
-    socket.emit('draw-card', card); // 送信！
+    socket.emit('draw-card', drawn); // ✅ 修正：drawn を送信
     renderHand();
-    updateSlotLabels(); // ←追加
+    updateSlotLabels();
   }
 }
+
 
 export function returnToDeck(card, mode = "top", target = "main") {
   if (!card || !card.instanceID) return;
