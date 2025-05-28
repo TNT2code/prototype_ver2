@@ -6,9 +6,10 @@ import { bindAllEvents } from './events.js';
 import { setupInteract } from './interact-setup.js';
 import { createBarricadeElement } from './utils.js';
 import { shuffle } from "./utils.js";
-import { renderHand } from "./hand.js";
+import { renderHand, hand } from "./hand.js";
 import { initOpponentDeck, drawOpponentCards } from './opponent.js';
-import { socket } from './socket-io.js'; // ✅ 追加
+import { socket, isHost } from './socket-io.js'; // ✅ 追加
+import './socket-actions.js'
 
 
 // カードリストを読み込んで初期化処理を開始
@@ -127,3 +128,28 @@ document.addEventListener("touchend", () => {
     delete window.__draggingBarricadePower;
   }
 }, { passive: true });
+
+
+// 初期配布枚数
+const INITIAL_HAND_COUNT = 5;
+
+window.addEventListener('DOMContentLoaded', () => {
+  if (isHost) {
+    // ホストが両者分のカードを引く
+    const myCards = [];
+    const opponentCards = [];
+    for (let i = 0; i < INITIAL_HAND_COUNT; i++) {
+      const myCard = drawCards(1, false); // false で emit しない
+      if (myCard) myCards.push(myCard);
+      const oppCard = drawCards(1, false);
+      if (oppCard) opponentCards.push(oppCard);
+    }
+
+    // 自分の手札描画
+    hand.push(...myCards);
+    renderHand();
+
+    // ゲストにカード送信
+    socket.emit("init-hands", opponentCards);
+  }
+});

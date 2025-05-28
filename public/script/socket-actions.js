@@ -24,18 +24,40 @@ socket.on("assign-role", (role) => {
   isHost = role === "host";
 });
 
+function zoneToCellId(zone) {
+  if (zone === "battle-player") return "player-0-0"; // 仮。実際のマスに合わせて変える
+  if (zone === "battle-opponent") return "enemy-0-0";
+  if (zone === "battle-center") return "center-0-0";
+  return null;
+}
+
+
 // 🧩 カード移動イベント受信（相手の操作）
+// socket-actions.js
 socket.on("move-card", ({ card, toZone }) => {
   if (!zones[toZone]) return;
   zones[toZone].push(card);
 
-  const target = document.querySelector(`[data-zone="${toZone}"]`);
-  if (target) {
-    const elem = createCardElement(card);
+  const cell = document.querySelector(`#${zoneToCellId(toZone)}`);
+  if (cell) {
+    const elem = createCardElement(card, "placed-card", "battle");
+    
+    // パワー・フォース表示
+    const powerLabel = document.createElement("div");
+    powerLabel.className = "power-label";
+    powerLabel.textContent = `⚡${card.パワー ?? "?"}`;
+    elem.appendChild(powerLabel);
+
+    const forceLabel = document.createElement("div");
+    forceLabel.className = "force-label";
+    forceLabel.textContent = `✨${card.フォース ?? "?"}`;
+    elem.appendChild(forceLabel);
+
     attachDetailListeners(elem, card);
-    target.appendChild(elem);
+    cell.appendChild(elem);
   }
 });
+
 
   // カード削除の同期
   socket.on("remove-card", ({ instanceID }) => {

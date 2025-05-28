@@ -48,7 +48,9 @@ export function drawCards(count = 1) {
     }
     const drawn = mainDeck.shift();
     hand.push(drawn);
-    socket.emit('draw-card', drawn); // ✅ 修正：drawn を送信
+
+    socket.emit("opponent-drew-card", drawn); // 🎯 同期用に送信
+
     renderHand();
     updateSlotLabels();
   }
