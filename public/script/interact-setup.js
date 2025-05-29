@@ -10,9 +10,10 @@ import {
 import { zones } from './zones.js';
 import { attachDetailListeners } from './modal.js';
 import { deck, mainDeck, mercDeck } from './deck.js';
-import { createCardElement, updateSlotLabels } from './utils.js';
-import { isHost, socket } from './socket-io.js';
-import { roomId } from './socket-io.js';
+import { createCardElement, updateSlotLabels} from './utils.js';
+import { isHost, socket} from './socket-io.js';
+import { roomId, convertZoneForPerspective} from './socket-io.js';
+
 
 
 function findCardByInstanceID(id) {
@@ -194,7 +195,7 @@ if (card) {
 
   renderHand();
   
-if (isHost) {
+
 console.log("📤 move-card送信:", card, guessedZone,cell.id);
 console.log("📡 roomId:", roomId);
 console.log("🧠 isHost:", isHost);
@@ -205,7 +206,7 @@ console.log("🧠 isHost:", isHost);
     toZone: guessedZone,
      cellId: cell.id  // ← 追加！！
   });
-}
+
 
   
 }
@@ -225,14 +226,13 @@ interact('.slot, .resource-slot').dropzone({
       renderHand();
       updateSlotLabels();
 
-      if (isHost) {
+
       socket.emit("move-card", {
         roomId,
         card,
-        toZone: zone,
-         //cellId: cell.id  // ← 追加！！
+   toZone: convertZoneForPerspective(zone, isHost), // ← ここ変更
       });
-    }
+    
     });
   } // ← ✅ ここが必要
 });
@@ -256,7 +256,7 @@ console.log("👤 isHost:", isHost);
 console.log("📡 roomId:", roomId);
 console.log("🧠 isHost:", isHost);
 
-if (isHost) {
+
   const toZone = "hand";  // もしくはゾーンマッピング関数などを使って決定
   socket.emit("move-card", {
     roomId,
@@ -264,7 +264,7 @@ if (isHost) {
     toZone,
     cellId: null
   });
-}
+
 
       }
       });
@@ -285,14 +285,14 @@ if (isHost) {
         updateSlotLabels(); // ←追加
 
               // ✅ 相手に送信
-              if (isHost) {
+    
       socket.emit("move-card", {
           roomId,
         card,
         toZone: "deck",
          //cellId: cell.id  // ← 追加！！
       });
-    }
+    
       });
     }
   });
