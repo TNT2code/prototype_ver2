@@ -661,7 +661,7 @@ body.guest .zone {
 }
 
 
-/* ゲストのカードはさらに180度回転で元に戻す */
+/* ゲストのカードはさらに180度回転で元に戻す 
 body.guest .placed-card,
 body.guest .hand-card,
 body.guest .zone-card,
@@ -670,3 +670,4 @@ body.guest .power-label,
 body.guest .force-label {
   transform: rotate(180deg);
 }
+*/
