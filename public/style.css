@@ -644,3 +644,29 @@ body {
   color: white;
   font-size: 13px;
 }
+
+
+/* ゲストは盤面を180度回転 */
+body.guest .board {
+display: flex;
+  flex-direction: column-reverse; /* 上下の順序を反転 */
+}
+
+body.guest .board .cell {
+  transform: rotate(180deg);
+}
+
+body.guest .zone {
+  transform: rotate(180deg); /* zone内部のカードなども元に戻す */
+}
+
+
+/* ゲストのカードはさらに180度回転で元に戻す */
+body.guest .placed-card,
+body.guest .hand-card,
+body.guest .zone-card,
+body.guest .card-image,
+body.guest .power-label,
+body.guest .force-label {
+  transform: rotate(180deg);
+}
