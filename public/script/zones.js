@@ -12,4 +12,6 @@ export const zones = {
     "battle-player": [],
   "battle-opponent": [],
   "battle-center": [],
+  "player-hand": [],
+  "opponent-hand": [],
 };

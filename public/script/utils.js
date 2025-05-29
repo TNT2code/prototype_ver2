@@ -59,7 +59,7 @@ div.appendChild(img);
     }));
   });
 
-  attachDetailListeners(div, card);
+  //attachDetailListeners(div, card);
   return div;
 }
 
@@ -175,4 +175,10 @@ if (zone.includes("resource1")) {
 
 
   });
+}
+
+// utils.js の最後あたりに追加
+export function removeCardByInstanceID(instanceID) {
+  const elem = document.querySelector(`[data-instance-id="${instanceID}"]`);
+  if (elem) elem.remove();
 }

@@ -249,21 +249,23 @@ interact('.slot, .resource-slot').dropzone({
         updateSlotLabels(); // ←追加
 
               // ✅ 相手に送信
-              console.log("📡 move-card を送信:", card, "→", guessedZone);
+              //console.log("📡 move-card を送信:", card, "→", guessedZone);
 console.log("👤 isHost:", isHost); 
  if (isHost) {
-  console.log("📤 move-card送信:", card, guessedZone);
+  //console.log("📤 move-card送信:", card, guessedZone);
 console.log("📡 roomId:", roomId);
 console.log("🧠 isHost:", isHost);
 
-if (isHost) {     
-socket.emit("move-card", {
-            roomId,
-          card,
-          toZone: "hand",
-           //cellId: cell.id  // ← 追加！！
-        });
-      }
+if (isHost) {
+  const toZone = "hand";  // もしくはゾーンマッピング関数などを使って決定
+  socket.emit("move-card", {
+    roomId,
+    card,
+    toZone,
+    cellId: null
+  });
+}
+
       }
       });
     }

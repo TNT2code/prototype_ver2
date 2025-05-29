@@ -45,25 +45,32 @@ function zoneToCellId(zone) {
 }
 
 
-// 🧩 カード移動イベント受信（相手の操作）
-// socket-actions.js
-// socket-actions.js
-
+// 🧩 カード移動イベント受信
 socket.on("move-card", ({ card, toZone, cellId }) => {
   console.log("📥 move-card受信:", card, toZone, cellId);
 
-  removeCardByInstanceID(card.instanceID);
-
+  removeCardByInstanceID(card.instanceID);  // 重複カード削除
   if (!zones[toZone]) return;
   zones[toZone].push(card);
 
-  const resolvedCellId = cellId ?? zoneToCellId(toZone);
-  const cell = resolvedCellId ? document.getElementById(resolvedCellId) : null;
-
+  // ✅ スロット or 手札ゾーンへの追加（data-zone 対応）
   const slotTarget = document.querySelector(`[data-zone="${toZone}"]`);
+  if (slotTarget) {
+    const elem = createCardElement(card, "zone-card");
+    elem.setAttribute("data-instance-id", card.instanceID);
+    attachDetailListeners(elem, card);
+    //slotTarget.appendChild(elem);
+    return;
+  }
+
+  // ✅ 戦地セルへの追加（cellId 指定 or fallback）
+  const cell = cellId
+    ? document.getElementById(cellId)
+    : document.querySelector(`#${zoneToCellId(toZone)}`);
 
   if (cell) {
     const elem = createCardElement(card, "placed-card", "battle");
+    elem.setAttribute("data-instance-id", card.instanceID);
 
     const powerLabel = document.createElement("div");
     powerLabel.className = "power-label";
@@ -77,15 +84,10 @@ socket.on("move-card", ({ card, toZone, cellId }) => {
 
     attachDetailListeners(elem, card);
     cell.appendChild(elem);
-  } else if (slotTarget) {
-    const elem = createCardElement(card);
-    attachDetailListeners(elem, card);
-    slotTarget.appendChild(elem);
   } else {
-    console.warn(`❌ 対象DOMが見つかりません: zone=${toZone}, cellId=${cellId}`);
+    console.warn(`❌ 対象cellが見つかりません: ${cellId ?? zoneToCellId(toZone)}`);
   }
 });
-
 
 
 
