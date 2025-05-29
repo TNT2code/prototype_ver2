@@ -195,11 +195,15 @@ if (card) {
   renderHand();
   
 if (isHost) {
-  console.log("📤 move-card送信", card, guessedZone);
+console.log("📤 move-card送信:", card, guessedZone,cell.id);
+console.log("📡 roomId:", roomId);
+console.log("🧠 isHost:", isHost);
+
   socket.emit("move-card", {
       roomId,
     card,
-    toZone: guessedZone
+    toZone: guessedZone,
+     cellId: cell.id  // ← 追加！！
   });
 }
 
@@ -221,11 +225,14 @@ interact('.slot, .resource-slot').dropzone({
       renderHand();
       updateSlotLabels();
 
+      if (isHost) {
       socket.emit("move-card", {
         roomId,
         card,
-        toZone: zone
+        toZone: zone,
+         //cellId: cell.id  // ← 追加！！
       });
+    }
     });
   } // ← ✅ ここが必要
 });
@@ -245,11 +252,18 @@ interact('.slot, .resource-slot').dropzone({
               console.log("📡 move-card を送信:", card, "→", guessedZone);
 console.log("👤 isHost:", isHost); 
  if (isHost) {
-        socket.emit("move-card", {
+  console.log("📤 move-card送信:", card, guessedZone);
+console.log("📡 roomId:", roomId);
+console.log("🧠 isHost:", isHost);
+
+if (isHost) {     
+socket.emit("move-card", {
             roomId,
           card,
-          toZone: "hand"
+          toZone: "hand",
+           //cellId: cell.id  // ← 追加！！
         });
+      }
       }
       });
     }
@@ -269,11 +283,14 @@ console.log("👤 isHost:", isHost);
         updateSlotLabels(); // ←追加
 
               // ✅ 相手に送信
+              if (isHost) {
       socket.emit("move-card", {
           roomId,
         card,
-        toZone: "deck"
+        toZone: "deck",
+         //cellId: cell.id  // ← 追加！！
       });
+    }
       });
     }
   });

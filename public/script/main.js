@@ -9,7 +9,7 @@ import { shuffle } from "./utils.js";
 import { renderHand, hand } from "./hand.js";
 import { initOpponentDeck, drawOpponentCards } from './opponent.js';
 import { socket, isHost } from './socket-io.js'; // ✅ 追加
-import './socket-actions.js'
+import './socket-actions.js';
 
 
 // カードリストを読み込んで初期化処理を開始

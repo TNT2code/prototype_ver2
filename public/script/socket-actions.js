@@ -5,6 +5,15 @@ import { createBarricadeElement, createCardElement } from './utils.js';
 import { zones } from './zones.js';
 import { attachDetailListeners } from './modal.js';
 
+console.log("✅ JS読込: socket-actions.js");
+
+socket.on("connect", () => {
+  console.log("🟢 Socket接続完了:", socket.id);
+});
+
+
+
+
 // 🔰 バリケード設置イベント受信処理
 socket.on("place-barricade", ({ zone, power }) => {
   const barricade = createBarricadeElement(power);
@@ -38,46 +47,46 @@ function zoneToCellId(zone) {
 
 // 🧩 カード移動イベント受信（相手の操作）
 // socket-actions.js
-socket.on("move-card", ({ card, toZone }) => {
-  console.log("📥 move-card受信:", card, toZone);
+// socket-actions.js
 
-  if (!zones[toZone]) {
-    console.warn("❌ 無効なゾーン:", toZone);
-    return;
-  }
+socket.on("move-card", ({ card, toZone, cellId }) => {
+  console.log("📥 move-card受信:", card, toZone, cellId);
 
-  zones[toZone].push(card); // 受信側のzone情報に追加
+  if (!zones[toZone]) return;
+  zones[toZone].push(card);
 
-  const target = document.querySelector(`[data-zone="${toZone}"]`);
+  const cell = cellId
+    ? document.getElementById(cellId)
+    : document.querySelector(`#${zoneToCellId(toZone)}`);
 
-  if (target) {
-    // 通常スロットや手札ゾーンに表示
-    const elem = createCardElement(card);
+  if (cell) {
+    // 見えるようにデバッグ
+    cell.style.border = "3px solid red";
+
+    const elem = createCardElement(card, "placed-card", "battle");
+
+    const powerLabel = document.createElement("div");
+    powerLabel.className = "power-label";
+    powerLabel.textContent = `⚡${card.パワー ?? "?"}`;
+    elem.appendChild(powerLabel);
+
+    const forceLabel = document.createElement("div");
+    forceLabel.className = "force-label";
+    forceLabel.textContent = `✨${card.フォース ?? "?"}`;
+    elem.appendChild(forceLabel);
+
     attachDetailListeners(elem, card);
-    target.appendChild(elem);
+    cell.appendChild(elem);
+
+console.log(cell.innerHTML);
+
+
   } else {
-    // たとえば戦地（battle系）は cell ID にマッピングされる
-    const cell = document.querySelector(`#${zoneToCellId(toZone)}`);
-    if (cell) {
-      const elem = createCardElement(card, "placed-card", "battle");
-
-      const powerLabel = document.createElement("div");
-      powerLabel.className = "power-label";
-      powerLabel.textContent = `⚡${card.パワー ?? "?"}`;
-      elem.appendChild(powerLabel);
-
-      const forceLabel = document.createElement("div");
-      forceLabel.className = "force-label";
-      forceLabel.textContent = `✨${card.フォース ?? "?"}`;
-      elem.appendChild(forceLabel);
-
-      attachDetailListeners(elem, card);
-      cell.appendChild(elem);
-    } else {
-      console.warn(`❌ 対象DOMが見つかりません: ${toZone}`);
-    }
+    console.warn(`❌ 対象cellが見つかりません: ${cellId ?? zoneToCellId(toZone)}`);
   }
 });
+
+
 
 
 

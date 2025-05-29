@@ -5,10 +5,12 @@ export const socket = io();
 export let isHost = false;
 export let roomId = prompt("ルームIDを入力してください", "room1");
 
+socket.on("connect", () => {
+  console.log("🟢 Socket接続完了:", socket.id);
+  socket.emit("join-room", roomId);  // ← 接続後に emit
+});
+
 socket.on("assign-role", (role) => {
   isHost = role === "host";
   console.log("🧩 あなたの役割は:", isHost ? "ホスト" : "ゲスト");
 });
-
-// 初期接続後にルーム参加
-socket.emit("join-room", roomId);
