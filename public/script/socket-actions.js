@@ -52,20 +52,17 @@ function zoneToCellId(zone) {
 socket.on("move-card", ({ card, toZone, cellId }) => {
   console.log("📥 move-card受信:", card, toZone, cellId);
 
-    // 既存のカードを削除
   removeCardByInstanceID(card.instanceID);
 
   if (!zones[toZone]) return;
   zones[toZone].push(card);
 
-  const cell = cellId
-    ? document.getElementById(cellId)
-    : document.querySelector(`#${zoneToCellId(toZone)}`);
+  const resolvedCellId = cellId ?? zoneToCellId(toZone);
+  const cell = resolvedCellId ? document.getElementById(resolvedCellId) : null;
+
+  const slotTarget = document.querySelector(`[data-zone="${toZone}"]`);
 
   if (cell) {
-    // 見えるようにデバッグ
-    cell.style.border = "3px solid red";
-
     const elem = createCardElement(card, "placed-card", "battle");
 
     const powerLabel = document.createElement("div");
@@ -80,12 +77,12 @@ socket.on("move-card", ({ card, toZone, cellId }) => {
 
     attachDetailListeners(elem, card);
     cell.appendChild(elem);
-
-console.log(cell.innerHTML);
-
-
+  } else if (slotTarget) {
+    const elem = createCardElement(card);
+    attachDetailListeners(elem, card);
+    slotTarget.appendChild(elem);
   } else {
-    console.warn(`❌ 対象cellが見つかりません: ${cellId ?? zoneToCellId(toZone)}`);
+    console.warn(`❌ 対象DOMが見つかりません: zone=${toZone}, cellId=${cellId}`);
   }
 });
 
