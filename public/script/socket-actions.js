@@ -52,6 +52,9 @@ function zoneToCellId(zone) {
 socket.on("move-card", ({ card, toZone, cellId }) => {
   console.log("📥 move-card受信:", card, toZone, cellId);
 
+    // 既存のカードを削除
+  removeCardByInstanceID(card.instanceID);
+
   if (!zones[toZone]) return;
   zones[toZone].push(card);
 
@@ -106,3 +109,16 @@ console.log(cell.innerHTML);
 
 
 export { isHost };
+
+function removeCardByInstanceID(instanceID) {
+  for (const zone in zones) {
+    const index = zones[zone].findIndex(c => c.instanceID === instanceID);
+    if (index !== -1) {
+      zones[zone].splice(index, 1); // ゾーンから削除
+      break;
+    }
+  }
+
+  const elem = document.querySelector(`[data-instance-id="${instanceID}"]`);
+  if (elem) elem.remove(); // DOMから削除
+}
